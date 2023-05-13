@@ -14,8 +14,11 @@
         "prettier": "^1.17.0"
     },
     "dependencies": {
+        "@tsndr/cloudflare-worker-jwt": "^2.2.1",
+        "firebase-admin": "^11.5.0",
+        "hono": "^2.7.6",
         "itty-router": "^2.1.9",
-        "jsonwebtoken": "^8.5.1",
+        "jose": "^4.11.4",
         "jwks-rsa": "^2.0.4",
         "serverless-cloudflare-workers": "^1.2.0"
     }

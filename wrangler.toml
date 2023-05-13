@@ -1,4 +1,5 @@
 type = "webpack"
-name = "black-math-6702"
-account_id = "YOUR_ACCOUNT_ID"
+name = "maplateditorserver"
+account_id = "61f248de47f07bdbf3dd2133a5378e64"
 workers_dev = true
+node_compat = true

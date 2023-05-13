@@ -1,5 +1,6 @@
 import { Router } from 'itty-router'
-import jwt from 'jsonwebtoken'
+import jwt from '@tsndr/cloudflare-worker-jwt'
+import {SignJWT, jwtVerify} from "jose"
 
 const corsHeaders = {
     'Content-Type': 'application/json',
@@ -18,19 +19,29 @@ async function validateToken(token) {
         method: 'GET',
     })
     const responseBody = await response.json()
+    console.log(responseBody)
     const key_list = Object.keys(responseBody)
     let isError = true
     let decoded = ''
     for (let i = 0; i < key_list.length; i++) {
         try {
             if (isError) {
-                const cert = responseBody[key_list[i]]
-                decoded = jwt.verify(token, cert)
-                console.log('This Key Passed > ', decoded)
-                isError = false
+                let cert = responseBody[key_list[i]]
+                cert = cert.replace(/ CERTIFICATE-/gm, " PUBLIC KEY-")
+                //console.log(token)
+                //console.log(cert)
+                //console.log(key_list);
+                //decoded = await jwt.verify(token, cert)
+                try {
+                    decoded = await jwtVerify(token, cert)
+                    console.log('This Key Passed > ', decoded)
+                    isError = false
+                } catch (e) {
+                    console.log(e)
+                }
             }
         } catch (e) {
-            //console.log('e > ', e)
+            console.log('e > ', e)
             if (e.name == 'TokenExpiredError') {
                 isError = false
                 decoded = e
@@ -43,7 +54,8 @@ async function validateToken(token) {
 }
 
 router.get('/users/', async request => {
-    const token = Object.fromEntries(request.headers).token
+    const headers = Object.fromEntries(request.headers)
+    const token = headers.token
     const decoded = await validateToken(token)
     console.log('decoded > ', JSON.stringify(decoded))
     return new Response(JSON.stringify(decoded), {
